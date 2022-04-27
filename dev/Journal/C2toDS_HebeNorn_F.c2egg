@@ -1,0 +1,18 @@
+// between 0 and 138
+x:-3
+// between 0 and 50
+y:8
+
+// spriteIndex should be between 0 and 16, if gallery is "eggs"
+gallery:eggs
+spriteIndex:1
+
+// genome(s) - dad can be blank
+mumGenome:desert
+dadGenome:
+
+// 0 - random, 1 - female, 2 - male
+sex:1
+
+// name and description
+description:Hebe Norn
