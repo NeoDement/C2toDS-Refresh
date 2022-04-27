@@ -1,0 +1,816 @@
+enum 1 29 50201
+	kill targ
+next
+
+enum 1 29 50200
+	kill targ
+next
+
+
+setv game "C2toDS_Hatchery_Nest_X" 86
+setv game "C2toDS_Hatchery_Nest_Y" 158
+
+
+*setv game "C2toDS_Hatchery_Nest_X" 82
+*setv game "C2toDS_Hatchery_Nest_Y" 143
+
+*unused i believe
+*setv game "C2toDS_Hatchery_Nest_Width" 86
+*setv game "C2toDS_Hatchery_Nest_Height" 158
+
+setv game "C2toDS_Hatchery_EggShadow_OffsetX" 14
+setv game "C2toDS_Hatchery_EggShadow_OffsetY" 60
+
+
+*1 29 50200 - hatchery window (comp)
+*1 29 50201 - egg data holder (simp)
+
+
+***************************
+*      EGG VARIABLES      *
+***************************
+* OV00 - egg ID           *
+* OV01 - egg initial X    *
+* OV02 - egg initial Y    *
+* OV03 - egg gallery      *
+* OV04 - egg sprite index *
+* OV05 - egg mum genome   *
+* OV06 - egg dad genome   *
+* OV07 - egg sex          *
+* OV08 - NO LONGER USED         *
+* OV09 - egg description  *
+* OV10 - hatchery object  *
+* OV11 - egg part number  * (on hatchery comp object)
+*ov12 - how long until we reset the timer?
+*ov13 - is this the highlighted egg?
+***************************
+
+
+
+**set egg initial X and Y to random numbers inside the hatchery nest bounding box
+*setv ov01 rand 0 138
+*setv ov02 rand 0 50
+*
+**set egg gallery to "eggs" (in future I'd like to support the Custom Egg Framework)
+*sets ov03 "eggs"
+
+
+
+*set loop iteration to 0
+setv va90 0
+
+reps 6
+
+*	file iope 1 "C2toDS_ChiChiNorn.c2egg"
+
+*	doif va90 = 0
+*		file iope 1 "C2toDS_GoldenDesertNorn_1.c2egg"
+*	elif va90 = 1
+*		file iope 1 "C2toDS_GoldenDesertNorn_2.c2egg"
+*	elif va90 = 2
+*		file iope 1 "C2toDS_GoldenDesertNorn_3.c2egg"
+*	elif va90 = 3
+*		file iope 1 "C2toDS_GoldenDesertNorn_4.c2egg"
+*	endi
+
+
+	doif va90 = 0
+		file iope 1 "C2toDS_HebeNorn_F.c2egg"
+	elif va90 = 1
+		file iope 1 "C2toDS_HebeNorn_M.c2egg"
+	elif va90 = 2
+		file iope 1 "C2toDS_EmeraldNorn_F.c2egg"
+	elif va90 = 3
+		file iope 1 "C2toDS_EmeraldNorn_M.c2egg"
+	elif va90 = 4
+		file iope 1 "C2toDS_PixieNorn_F.c2egg"
+	elif va90 = 5
+		file iope 1 "C2toDS_PixieNorn_M.c2egg"
+	endi
+
+*	file iope 1 "C2toDS_EmeraldNorn_M.c2egg"
+
+*todo: do something if you cant find it
+*also do something if there are any missing keyvalues instead of infinite loop...
+
+	new: simp 1 29 50201 "blnk" 1 0 0
+
+*set egg ID to loop Iteration
+	setv ov00 va90
+
+*load in all the necessary egg data
+	sets va35 "x:"
+	gsub load_value_from_key_named_va35_into_string_va30
+	sets ov01 va30
+
+	sets va35 "y:"
+	gsub load_value_from_key_named_va35_into_string_va30
+	sets ov02 va30
+
+*TEMPORARY RANDOMIZE X AND Y
+
+*	setv ov01 rand 0 138
+*	setv ov02 rand 0 50
+*	sets ov01 vtos ov01
+*	sets ov02 vtos ov02
+
+
+	sets va35 "gallery:"
+	gsub load_value_from_key_named_va35_into_string_va30
+	sets ov03 va30
+
+	sets va35 "spriteindex:"
+	gsub load_value_from_key_named_va35_into_string_va30
+	sets ov04 va30
+
+*TEMPORARY RANDOMIZE SPRITE INDEX
+
+*	setv ov04 rand 0 10
+*we multiply it later.
+*	mulv ov04 8
+*	sets ov04 vtos ov04
+
+
+	sets va35 "mumgenome:"
+	gsub load_value_from_key_named_va35_into_string_va30
+	sets ov05 va30
+
+	sets va35 "dadgenome:"
+	gsub load_value_from_key_named_va35_into_string_va30
+	sets ov06 va30
+
+
+	sets va35 "sex:"
+	gsub load_value_from_key_named_va35_into_string_va30
+	sets ov07 va30
+
+
+*TEMPORARY RANDOMIZE SEX
+
+*	setv ov07 rand 0 2
+*	sets ov07 vtos ov07
+
+*	sets va35 "name:"
+*	gsub load_value_from_key_named_va35_into_string_va30
+*	sets ov08 va30
+
+	sets va35 "description:"
+	gsub load_value_from_key_named_va35_into_string_va30
+	sets ov09 va30
+
+
+*	untl inok = 0
+	file iclo
+
+*increase loop Iteration
+	addv va90 1
+
+repe
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+* Hatchery Panel - Comp
+*plane 9024, 51 below Quit dialog
+
+*part 0 - background image
+new: comp 1 29 50200 "moe_C2toDS_Hatchery" 1 0 9024
+
+*attr from Quit dialog
+attr 304
+
+*listen for Raw Mouse Move and Raw Mouse Down inputs
+imsk 12
+
+*part 1 - claw overlay
+pat: dull 1 "moe_C2toDS_Hatchery" 1 0 0 51
+
+*part 2 - glass overlay (50% transparency)
+pat: dull 2 "moe_C2toDS_Hatchery" 2 0 0 51
+
+*set glass to 50% transparency
+part 2
+alph 128 1
+
+
+*part 3 - selected egg marker/egg sex symbol
+pat: dull 3 "moe_C2toDS_Hatchery" 0 0 0 52
+
+*set C2 framerate
+part 3
+frat 2
+
+*the 4 sexes:
+*4 NONE (used whenever an egg isnt selected, its a blank image)
+*5 unknown
+*21 female
+*37 male
+
+*so base 4 by default.
+base 4
+pose 0
+
+
+*set the currently highlighted egg to none by default			
+seta ov99 null
+
+
+*find centre of screen (from Quit dialog)
+setv va90 wndw
+divv va90 2
+setv va91 wndh
+divv va91 2
+setv va92 wdth
+divv va92 2
+setv va93 hght
+divv va93 2
+
+subv va90 va92
+subv va91 va93
+
+flto va90 va91
+
+
+*part numbers for eggs, starting at 4
+setv va00 4
+
+*we'll need to re-target the main hatchery comp object in a moment
+seta va99 targ
+
+enum 1 29 50201
+
+*we'll need to re-target the current egg data we're looking at in a moment
+	seta va98 targ
+
+***************************
+*      EGG VARIABLES      *
+***************************
+* OV00 - egg ID           *
+* OV01 - egg initial X    *
+* OV02 - egg initial Y    *
+* OV03 - egg gallery      *
+* OV04 - egg sprite index *
+* OV05 - egg mum genome   *
+* OV06 - egg dad genome   *
+* OV07 - egg sex          *
+* OV08 - egg name         *
+* OV09 - egg description  *
+* OV10 - hatchery object  *
+* OV11 - egg part number  * (on hatchery comp object)
+
+*ov12 - egg rustle timer
+*ov13 - is egg highlighted?
+***************************
+
+	setv va20 ov00
+	setv va21 stoi ov01
+	setv va22 stoi ov02
+
+*va30 is a copy of va22 but without the Y offset added. it's used for an automatic plane between 0 and 50.
+	setv va30 va22
+
+*va31 is the same as above but -1. it's used for the egg shadow.
+	setv va31 va30
+	subv va31 va30
+
+*add coords of topleft of hatchery nest bounding box to XY coords of egg
+	addv va21 game "C2toDS_Hatchery_Nest_X"
+	addv va22 game "C2toDS_Hatchery_Nest_Y"
+
+	sets va23 ov03
+	setv va24 stoi ov04
+
+*multiply it by 8 to find the first egg image for the index number.
+	mulv va24 8
+
+*add 2 to find third stage of growth.
+	addv va24 2
+
+	sets va25 ov05
+	sets va26 ov06
+	setv va27 stoi ov07
+*	sets va28 ov08
+	sets va29 ov09
+
+
+*and now feed in some new info for the egg data object to remember:
+
+*hatchery object id:
+	seta ov10 va99
+*egg part number on hatchery object:
+	setv ov11 va00
+
+	targ va99
+
+*part N - EGG SPRITE
+	pat: dull va00 va23 va24 va21 va22 va30
+
+*adjust X/Y offset of shadow
+	addv va21 game "C2toDS_Hatchery_EggShadow_OffsetX"
+	addv va22 game "C2toDS_Hatchery_EggShadow_OffsetY"
+
+*part N+1 - EGG SHADOW
+	setv va01 va00
+	addv va01 1
+	pat: dull va01 "moe_C2toDS_Hatchery" 3 va21 va22 va31
+
+*set shadow to 25% opacity
+	part va01
+	alph 192 1
+
+*+2 iteration counter
+	addv va00 2
+
+next
+
+
+
+
+
+*the subroutine that makes it happen!
+
+subr load_value_from_key_named_va35_into_string_va30
+
+*init keyName string
+	sets va01 ""
+
+	loop
+		sets va00 innl
+
+		sets va02 lowa va00
+
+		doif sins va02 1 va35 = -1
+			adds va01 va00
+		endi
+
+	untl sins va02 1 va35 <> -1
+
+
+*	setv va03 strl va02
+*	subv va03 sins va02 1 "frame0: "
+
+*	sets va99 subs va02 sins va02 1 "frame0: " va03
+
+
+*read from position N (length of keyName string) (VA03) to the END OF STRING. calculated by subtracting VA03 from the length of the current string (VA02).
+	setv va03 strl va35
+*this way off by 1 and we were reading the first pixel with as ":10" instead of "10"
+	addv va03 1
+	setv va04 strl va02
+	subv va04 va03
+
+
+*new fix, todo, might be dodgy. stops it cutting off the last character of eggs...
+	addv va04 1
+
+*  	vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+	sets va30 subs va02 va03 va04
+*  	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+retn
+
+
+**iteration counter
+*setv va00 0
+*
+*reps 6
+*
+**select egg sprite
+*	setv va60 rand 0 10
+*	mulv va60 8
+*
+**add 2 to find third stage of growth.		
+*	addv va60 2
+*
+**randomize coords
+*	setv va50 rand 0 50
+*	setv va51 rand 0 138
+*
+**add coords of topleft of hatchery nest bounding box
+*	addv va50 game "C2toDS_Hatchery_Nest_X"
+*	addv va51 game "C2toDS_Hatchery_Nest_Y"
+*
+**part N - EGG SPRITE
+*	pat: dull va00 "eggs" va60 0 0 50
+*
+**part N+1 - EGG SHADOW
+*	setv va01 va00
+*	addv va01 1
+*	pat: dull va01 "moe_C2toDS_Hatchery" 1 3 va50 va51
+*
+**part N+2 - EGG SEX SYMBOL
+*	setv va01 va00
+*	addv va01 2
+*	pat: dull va01 "moe_C2toDS_Hatchery" 16 4 va50 va51
+*
+*
+**+2 iteration counter
+*	addv va00 2
+*
+*repe
+
+
+*		inst
+*		new: simp 3 4 1 "eggs" 8 va60 0
+
+
+
+*Raw Mouse Move script for hatchery
+
+scrp 1 29 50200 75
+
+	inst
+
+
+	setv va02 posl
+	setv va03 post
+
+
+*subtract x and y of topleft of window from mouse coords to get mouse coords relative to the comp object
+* range: 0-window size
+	setv va00 _p1_
+	setv va01 _p2_
+
+	subv va00 va02
+	subv va01 va03
+
+
+*loop through all egg data objects to find out where the egg parts are!
+	enum 1 29 50201
+
+*egg positions
+		setv va10 stoi ov01
+*sprite is a bit too wide so make the bounding box 5 px less wide
+		addv va10 5
+*+ hatchery nest offset
+		addv va10 game "C2toDS_Hatchery_Nest_X"
+
+		setv va11 stoi ov02
+*sprite is a bit too tall so make the bounding box 15 px taller
+		addv va11 15
+*+ hatchery nest offset
+		addv va11 game "C2toDS_Hatchery_Nest_Y"
+
+*va12 is egg x position + egg bounding box width (34px)
+		setv va12 va10
+		addv va12 34
+
+*va13 is egg y position + egg bounding box height (53px)
+		setv va13 va11
+		addv va13 53
+
+*mouse cursor is over the current egg we're looking at!
+		doif va00 > va10 and va00 < va12 and va01 > va11 and va01 < va13
+
+*whenever an egg ticks, it randomizes it's position a bit.
+*every tick should look like the half framerate thing c2 has going on, as ticks run at half the framerate of the renderer.
+*it will count OV12 down to 0 and automatically disable the timer, to emulate them remaining excited for a bit.
+			setv ov12 5
+			tick 1
+
+*also set ov13 to 1 - ov13 marks that the mouse is over this egg.
+			setv ov13 1
+
+**va14 is ov07 from current egg, aka egg sex!
+*			setv va14 stoi ov07
+*
+*			targ ownr
+*
+**target egg sex/marker part
+*			part 3
+*
+*			inst
+*
+**make sure it's invisible before doing anything
+*			doif base = 4
+*
+**				1 - female
+*				doif va14 = 1
+*					base 21
+**				2 - male
+*				elif va14 = 2
+*					base 37
+**0 (and anything else) - random
+*				else
+*					base 5
+*				endi
+*
+*				pat: move 3 va10 va11
+*				anim [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 255]
+*
+*			endi
+
+*mouse cursor WASNT over current egg
+		else
+
+*reset ov13 to 0 - ov13 marks that the mouse is over this egg.
+			setv ov13 0
+
+		endi
+
+	next
+
+*va20 starts at 0. if it's still 0 by the end of this next loop, hide the sex marker
+	setv va20 0
+
+*loop through all egg data objects AGAIN, this time to see if any are highlighted and work out which highlighted egg has the highest plane
+	enum 1 29 50201
+
+*ov13 marks that the mouse is over this egg.
+		doif ov13 = 1
+			setv va20 1
+
+*VA21 stores the plane (Y pos) of the last hovered egg. if the new plane is higher (or equal), this egg takes precedence and becomes highlighted.
+			doif stoi ov02 >= va21
+
+*va14 is ov07 from current egg, aka egg sex!
+				setv va14 stoi ov07
+
+
+*egg positions
+				setv va10 stoi ov01
+*+ hatchery nest offset
+				addv va10 game "C2toDS_Hatchery_Nest_X"
+
+				setv va11 stoi ov02
+*+ hatchery nest offset
+				addv va11 game "C2toDS_Hatchery_Nest_Y"
+
+
+
+				doif va14 = 1
+
+*female sex marker X/Y offset
+					addv va10 14
+					subv va11 8
+
+				elif va14 = 2
+
+*male sex marker X/Y offset
+					addv va10 10
+					subv va11 6
+
+				else
+
+*random sex marker X/Y offset
+					addv va10 8
+					subv va11 12
+
+				endi
+
+			endi
+
+
+*remember the current egg data object
+			seta va99 targ
+
+			setv va21 stoi ov02
+
+		endi
+
+	next
+
+
+	targ ownr
+
+
+	doif va20 = 0
+		part 3
+		base 4
+		pose 0
+
+*set the currently highlighted egg to none so we know not to create anything if we left click
+		seta ov99 null
+	else
+
+
+*store the currently highlighted egg data object in the hatchery objects ov99 variable
+		seta ov99 va99
+
+*target egg sex/marker part
+		part 3
+
+		inst
+
+*make sure it's invisible before doing anything
+*			doif base = 4
+
+*		1 - female
+		doif va14 = 1
+			base 21
+*		2 - male
+		elif va14 = 2
+			base 37
+*		0 (and anything else) - random
+		else
+			base 5
+		endi
+
+		pat: move 3 va10 va11
+		anim [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 255]
+
+*			endi
+
+	endi
+
+endm
+
+
+
+
+*Raw Mouse Down script for hatchery
+
+scrp 1 29 50200 76
+
+*left mouse button only
+	doif _p1_ = 1
+
+*if there is a highlighted egg stored, create it!
+		doif ov99 <> null
+*			targ norn
+*			sezz "yep egg was higlighted"
+
+*			enum 1 99 9700
+*				kill targ
+*			next
+
+			targ ov99
+
+*get egg id (used to determine where in front of the incubator it appears)
+			setv va00 ov00
+
+*get egg gallery
+			sets va03 ov03
+
+*get egg sprite index
+			setv va04 stoi ov04
+
+*multiply it by 8 to get the correct egg sprite index
+			mulv va04 8
+
+*get genome
+			sets va05 ov05
+
+*get sex
+			setv va07 stoi ov07
+
+			inst
+			new: simp 3 4 1 va03 0 va04 0
+			puhl 0 15 45
+			puhl 1 15 35
+			puhl 2 15 25
+			puhl 3 15 10
+			puhl 4 15 10
+			puhl 5 15 10
+
+			emit 11 0.65
+
+**			gene move targ 1 ownr 1
+*
+*
+**		if this is virgin birth then do this
+*			doif va99 ne "crossing"
+*				gene load targ 1 va99
+*			else
+**		otherwise need to cross and move the genome
+*				gene cros targ 1 from 9 from 10 5 5 5 5
+*			endi
+
+*load in the correct genome hooray!!
+			gene load targ 1 va05
+
+*SEX!!!
+*1 for male, 2 for female or 0 for random
+
+*			female
+			doif va07 = 1
+				setv ov01 2
+*			male
+			elif va07 = 2
+				setv ov01 1
+*			random
+			else
+				setv ov01 0
+			endi
+
+
+			elas 10
+			fric rand 10 40
+			attr 195
+			bhvr 32
+			aero 10
+			accg 4
+			perm 60
+*starts fully grown
+			pose 3
+
+*		seta va01 targ
+*
+*		targ va00
+*		plne 6000
+*		anim [0 1 2 3 4]
+*		over
+*
+*		targ va01
+*		mvto 8357 49720
+*
+*		targ va00
+*		anim [5 5 5 5 5 4 3 2 1 0]
+*		over
+*		plne 10
+*
+*		targ va01
+
+
+			tick 900
+
+*bioenergy
+			setv ov61 100
+
+
+*get X coord. eggs start at 6948, 30 px between each egg
+			mulv va00 30
+			addv va00 6948
+
+			mvto va00 48367
+
+*		else
+*			targ norn
+*			sezz "nope no egg"
+		endi
+
+	endi
+
+endm
+
+
+*timer script for egg data holder
+
+scrp 1 29 50201 9
+
+
+*put part number of egg in va20
+	setv va20 ov11
+
+*store egg initial x and y positions in va21 and va22
+	setv va21 stoi ov01
+	setv va22 stoi ov02
+
+*+ hatchery nest offset
+	addv va21 game "C2toDS_Hatchery_Nest_X"
+*+ hatchery nest offset 
+	addv va22 game "C2toDS_Hatchery_Nest_Y"
+
+
+*OV12 is used to keep track of how long you've been animating. disable the timer if it reaches 0.
+	subv ov12 1
+
+	doif ov12 = 0
+		tick 0
+*randomize position a lil but only if we're still randomizing
+	else
+
+*todo: so it should take into account its current position before the randomization somehow.
+*because otherwise it can jump from its furthest left to furthest right pos and misses the middle one,
+*so it doesnt seem as nice and smooth as the c2 hatchery.
+		addv va21 rand -1 1
+		addv va22 rand -1 1
+	endi
+
+*target hatchery object
+	targ ov10
+
+	pat: move va20 va21 va22
+
+*also move the shadow (part number is egg part number+1)
+	addv va20 1
+
+*adjust X/Y offset of shadow
+	addv va21 game "C2toDS_Hatchery_EggShadow_OffsetX"
+	addv va22 game "C2toDS_Hatchery_EggShadow_OffsetY"
+
+	pat: move va20 va21 va22
+
+endm
+
+
+
+*see ya
+
+rscr
+
+enum 1 29 50200
+	kill targ
+next
