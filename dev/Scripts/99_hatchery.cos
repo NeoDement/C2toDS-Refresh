@@ -1,10 +1,18 @@
-enum 1 29 50201
-	kill targ
-next
+*enum 1 29 50201
+*	kill targ
+*next
 
 enum 1 29 50200
 	kill targ
 next
+
+
+*do all TODO:s and add a restock button and reskin it to look like Moe Weather toolbar and
+*add draggable top bar and window automove on screen size and remove ? button and make X button functional.
+*also maybe opening quit menu (and some others) auto-closes it.
+*or instead maybe it just auto-closes when the game detects it has been closed/re-opening a world?
+*and we need a button to open it in the first place!
+*and a few more sanity checks - what does it do if the genome doesn't exist!?
 
 
 setv game "C2toDS_Hatchery_Nest_X" 86
@@ -55,11 +63,13 @@ setv game "C2toDS_Hatchery_EggShadow_OffsetY" 60
 *sets ov03 "eggs"
 
 
+*refill the hatchery if we ran out of eggs
+doif totl 1 29 50201 = 0
 
 *set loop iteration to 0
-setv va90 0
+	setv va90 0
 
-reps 6
+	reps 6
 
 *	file iope 1 "C2toDS_ChiChiNorn.c2egg"
 
@@ -74,38 +84,38 @@ reps 6
 *	endi
 
 
-	doif va90 = 0
-		file iope 1 "C2toDS_HebeNorn_F.c2egg"
-	elif va90 = 1
-		file iope 1 "C2toDS_HebeNorn_M.c2egg"
-	elif va90 = 2
-		file iope 1 "C2toDS_EmeraldNorn_F.c2egg"
-	elif va90 = 3
-		file iope 1 "C2toDS_EmeraldNorn_M.c2egg"
-	elif va90 = 4
-		file iope 1 "C2toDS_PixieNorn_F.c2egg"
-	elif va90 = 5
-		file iope 1 "C2toDS_PixieNorn_M.c2egg"
-	endi
+		doif va90 = 0
+			file iope 1 "C2toDS_HebeNorn_F.c2egg"
+		elif va90 = 1
+			file iope 1 "C2toDS_HebeNorn_M.c2egg"
+		elif va90 = 2
+			file iope 1 "C2toDS_EmeraldNorn_F.c2egg"
+		elif va90 = 3
+			file iope 1 "C2toDS_EmeraldNorn_M.c2egg"
+		elif va90 = 4
+			file iope 1 "C2toDS_PixieNorn_F.c2egg"
+		elif va90 = 5
+			file iope 1 "C2toDS_PixieNorn_M.c2egg"
+		endi
 
 *	file iope 1 "C2toDS_EmeraldNorn_M.c2egg"
 
 *todo: do something if you cant find it
 *also do something if there are any missing keyvalues instead of infinite loop...
 
-	new: simp 1 29 50201 "blnk" 1 0 0
+		new: simp 1 29 50201 "blnk" 1 0 0
 
 *set egg ID to loop Iteration
-	setv ov00 va90
+		setv ov00 va90
 
 *load in all the necessary egg data
-	sets va35 "x:"
-	gsub load_value_from_key_named_va35_into_string_va30
-	sets ov01 va30
+		sets va35 "x:"
+		gsub load_value_from_key_named_va35_into_string_va30
+		sets ov01 va30
 
-	sets va35 "y:"
-	gsub load_value_from_key_named_va35_into_string_va30
-	sets ov02 va30
+		sets va35 "y:"
+		gsub load_value_from_key_named_va35_into_string_va30
+		sets ov02 va30
 
 *TEMPORARY RANDOMIZE X AND Y
 
@@ -115,13 +125,13 @@ reps 6
 *	sets ov02 vtos ov02
 
 
-	sets va35 "gallery:"
-	gsub load_value_from_key_named_va35_into_string_va30
-	sets ov03 va30
+		sets va35 "gallery:"
+		gsub load_value_from_key_named_va35_into_string_va30
+		sets ov03 va30
 
-	sets va35 "spriteindex:"
-	gsub load_value_from_key_named_va35_into_string_va30
-	sets ov04 va30
+		sets va35 "spriteindex:"
+		gsub load_value_from_key_named_va35_into_string_va30
+		sets ov04 va30
 
 *TEMPORARY RANDOMIZE SPRITE INDEX
 
@@ -131,18 +141,18 @@ reps 6
 *	sets ov04 vtos ov04
 
 
-	sets va35 "mumgenome:"
-	gsub load_value_from_key_named_va35_into_string_va30
-	sets ov05 va30
+		sets va35 "mumgenome:"
+		gsub load_value_from_key_named_va35_into_string_va30
+		sets ov05 va30
 
-	sets va35 "dadgenome:"
-	gsub load_value_from_key_named_va35_into_string_va30
-	sets ov06 va30
+		sets va35 "dadgenome:"
+		gsub load_value_from_key_named_va35_into_string_va30
+		sets ov06 va30
 
 
-	sets va35 "sex:"
-	gsub load_value_from_key_named_va35_into_string_va30
-	sets ov07 va30
+		sets va35 "sex:"
+		gsub load_value_from_key_named_va35_into_string_va30
+		sets ov07 va30
 
 
 *TEMPORARY RANDOMIZE SEX
@@ -154,20 +164,20 @@ reps 6
 *	gsub load_value_from_key_named_va35_into_string_va30
 *	sets ov08 va30
 
-	sets va35 "description:"
-	gsub load_value_from_key_named_va35_into_string_va30
-	sets ov09 va30
+		sets va35 "description:"
+		gsub load_value_from_key_named_va35_into_string_va30
+		sets ov09 va30
 
 
 *	untl inok = 0
-	file iclo
+		file iclo
 
 *increase loop Iteration
-	addv va90 1
+		addv va90 1
 
-repe
+	repe
 
-
+endi
 
 
 
@@ -186,7 +196,8 @@ repe
 *plane 9024, 51 below Quit dialog
 
 *part 0 - background image
-new: comp 1 29 50200 "moe_C2toDS_Hatchery" 1 0 9024
+*new: comp 1 29 50200 "moe_C2toDS_Hatchery" 1 0 9024
+new: comp 1 29 50200 "moe_C2toDS_Hatchery" 1 0 9000
 
 *attr from Quit dialog
 attr 304
@@ -475,10 +486,10 @@ scrp 1 29 50200 75
 		doif va00 > va10 and va00 < va12 and va01 > va11 and va01 < va13
 
 *whenever an egg ticks, it randomizes it's position a bit.
-*every tick should look like the half framerate thing c2 has going on, as ticks run at half the framerate of the renderer.
+*every OTHER tick should look like the half framerate thing c2 has going on...
 *it will count OV12 down to 0 and automatically disable the timer, to emulate them remaining excited for a bit.
 			setv ov12 5
-			tick 1
+			tick 2
 
 *also set ov13 to 1 - ov13 marks that the mouse is over this egg.
 			setv ov13 1
@@ -634,10 +645,15 @@ endm
 
 scrp 1 29 50200 76
 
+
+*TODO: it needs to attempt to grab the higlighted egg again right HERE instead, tbh. it often doesnt add an egg when it definitely should.
+
 *left mouse button only
 	doif _p1_ = 1
 
 *if there is a highlighted egg stored, create it!
+
+*TODO: BUG!! IT IS MEANT TO BE THE HIGHLIGHTED EGG WITH THE HIGHEST PLANE, BUT I THINK IT'S JUST USING WHICHEVER HIGHLIGHTED EGG LOADED LAST!
 		doif ov99 <> null
 *			targ norn
 *			sezz "yep egg was higlighted"
@@ -666,6 +682,8 @@ scrp 1 29 50200 76
 *get sex
 			setv va07 stoi ov07
 
+
+*make an EGG
 			inst
 			new: simp 3 4 1 va03 0 va04 0
 			puhl 0 15 45
@@ -690,6 +708,8 @@ scrp 1 29 50200 76
 
 *load in the correct genome hooray!!
 			gene load targ 1 va05
+
+*TODO: WHAT ABOUT THE DAD!
 
 *SEX!!!
 *1 for male, 2 for female or 0 for random
@@ -746,6 +766,23 @@ scrp 1 29 50200 76
 
 			mvto va00 48367
 
+*a fix for a rare edge case when importing an egg while hovering over a different egg
+			enum 1 29 50201
+				stpc
+				tick 0
+			next
+
+*kill the selected egg so it won't be there next time we load the hatchery!
+			targ ownr
+			targ ov99
+			kill targ
+			
+			*kill the hatchery itself
+			targ ownr
+			kill targ
+			
+			*TODO: target toolbar object and unpress hatchery.
+
 *		else
 *			targ norn
 *			sezz "nope no egg"
@@ -760,6 +797,7 @@ endm
 
 scrp 1 29 50201 9
 
+	inst
 
 *put part number of egg in va20
 	setv va20 ov11
@@ -792,16 +830,28 @@ scrp 1 29 50201 9
 *target hatchery object
 	targ ov10
 
-	pat: move va20 va21 va22
+	doif targ <> null
+
+
+		doif part va20 = 1
+			pat: move va20 va21 va22
+		endi
 
 *also move the shadow (part number is egg part number+1)
-	addv va20 1
+		addv va20 1
 
 *adjust X/Y offset of shadow
-	addv va21 game "C2toDS_Hatchery_EggShadow_OffsetX"
-	addv va22 game "C2toDS_Hatchery_EggShadow_OffsetY"
+		addv va21 game "C2toDS_Hatchery_EggShadow_OffsetX"
+		addv va22 game "C2toDS_Hatchery_EggShadow_OffsetY"
 
-	pat: move va20 va21 va22
+		doif part va20 = 1
+			pat: move va20 va21 va22
+		endi
+
+	else
+		targ ownr
+		tick 0
+	endi
 
 endm
 
@@ -812,5 +862,9 @@ endm
 rscr
 
 enum 1 29 50200
+	kill targ
+next
+
+enum 1 29 50201
 	kill targ
 next
