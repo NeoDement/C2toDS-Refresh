@@ -10,14 +10,9 @@ next
 *or instead maybe it just auto-closes when the game detects it has been closed/re-opening a world?
 *and we need a button to open it in the first place!
 *and a few more sanity checks - what does it do if the genome doesn't exist!?
+*^ instead of a momGenome and dadGenome it should just point to an existing egg agent and run the same code Muco does to extract the genome and work out which genome(s) it should use.
 
-*vvvvv
-*When you left click should be when it sets OV99! (or ov99 may not even be necessary).
-*the point is, it often grabs the egg behind the one with the sex symbol over it when left clicking. the sex symbol is obviously meant to indicate which egg is highlighted so this is no good.
-*^^^^^ you were halfway thru fixing this one
 
-*(either way, setting the highlighted egg in the raw mouse move script doesnt seem reliable)
-*The sex symbol anim resets whenever the mouse moves. It needs to not do that.
 
 *todo: see about renaming Hebe to Desert if it doesn't get the correct ID (might not be needed)
 
@@ -25,7 +20,9 @@ next
 
 
 *todo: nasty crashes to do with non-existant parts if the hatchery ever throws an error and desyncs the egg data objects with the egg parts
-*look into this one... the timer script can cause it i think
+*look into this one... the EGG ANIM timer script can cause it i think
+*(it happens if the hatchery is onscreen but had an error while creating the parts for each egg data holder, but then egg data holder tries to animate)
+*(a fine fix might be to just check a part exists before trying to pat: move it, but... it's still a bad situation so maybe do a full egg reset instead.)
 
 
 *todo: the weather toolbar temp sometimes draws above parts of the hatchery.
@@ -81,13 +78,20 @@ setv game "C2toDS_Hatchery_ResetButton_Height" 21
 
 
 * Hatchery Panel - Comp
-*plane 9024, 51 below Quit dialog
+*plane 9024, 51 below Quit dialog (9075)
+
+*creature history is panel is 8520
+*agent help panel is 9050
+*tooltips are 9500
 
 *part 0 - background image
 *new: comp 1 29 50200 "moe_C2toDS_Hatchery" 1 0 9024
-new: comp 1 29 50200 "moe_C2toDS_Hatchery" 1 0 9000
 
+*todo: finalize plane
+*new: comp 1 29 50200 "moe_C2toDS_Hatchery" 1 0 9000
 
+*plane 9010, 10 above
+new: comp 1 29 50200 "moe_C2toDS_Hatchery" 1 0 8420
 
 
 
@@ -122,6 +126,7 @@ scrp 1 29 50200 10
 *AND for raw key down events (+1)
 	imsk 29
 *todo: make use of this ^
+*(for alt tab/windows key!)
 
 
 *todo: i hate this
@@ -315,8 +320,8 @@ scrp 1 29 50200 75
 		addv va10 game "C2toDS_Hatchery_Nest_X"
 
 		setv va11 stoi ov02
-*sprite is a bit too tall so make the bounding box 15 px taller
-		addv va11 15
+*sprite is a bit too tall so make the bounding box 12 px less tall
+		addv va11 12
 *+ hatchery nest offset
 		addv va11 game "C2toDS_Hatchery_Nest_Y"
 
@@ -435,15 +440,23 @@ scrp 1 29 50200 75
 
 				endi
 
+*remember the current egg data object
+				seta va99 targ
+
+*remember the plane of the egg we just iterated over
+				setv va21 stoi ov02
+
 			endi
 
 
 *remember the current egg data object
-			seta va99 targ
+*			seta va99 targ
 
-			setv va21 stoi ov02
+
 
 		endi
+
+
 
 	next
 
@@ -556,7 +569,7 @@ endm
 
 
 *TODO: improve
-*load eggs script (big wip because it needs a hardcoded list at present)
+*load eggs script
 
 scrp 1 29 50200 1000
 
@@ -593,7 +606,7 @@ scrp 1 29 50200 1000
 * OV11 - egg part number  * (on hatchery comp object)
 *ov12 - how long until we reset the timer?
 *ov13 - is this the highlighted egg?
-*ov99 - filename associated with this egg (only used during egg loading loop)
+* 0-N - temporary variables used in an object with the same classifier as an egg data object to help load in data (clean this comment and move elsewhere) todo:
 ***************************
 
 
