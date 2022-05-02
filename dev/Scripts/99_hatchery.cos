@@ -10,9 +10,18 @@ next
 *or instead maybe it just auto-closes when the game detects it has been closed/re-opening a world?
 *and we need a button to open it in the first place!
 *and a few more sanity checks - what does it do if the genome doesn't exist!?
+
+*vvvvv
 *When you left click should be when it sets OV99! (or ov99 may not even be necessary).
+*the point is, it often grabs the egg behind the one with the sex symbol over it when left clicking. the sex symbol is obviously meant to indicate which egg is highlighted so this is no good.
+*^^^^^ you were halfway thru fixing this one
+
 *(either way, setting the highlighted egg in the raw mouse move script doesnt seem reliable)
 *The sex symbol anim resets whenever the mouse moves. It needs to not do that.
+
+*todo: see about renaming Hebe to Desert if it doesn't get the correct ID (might not be needed)
+
+*todo: pressing ALT or WINDOWS KEY (for alt tab) should also detach the window from the cursor!
 
 
 *todo: nasty crashes to do with non-existant parts if the hatchery ever throws an error and desyncs the egg data objects with the egg parts
@@ -20,6 +29,10 @@ next
 
 
 *todo: the weather toolbar temp sometimes draws above parts of the hatchery.
+
+
+
+
 
 
 *todo: fix this up so no minus coordinates are needed in the .c2egg files
@@ -32,7 +45,7 @@ setv game "C2toDS_Hatchery_EggShadow_OffsetY" 60
 
 
 
-*todo: think of a way to get rid of this variable
+*todo: move this variable to the toolbar-that-opens-kits, when such a toolbar exists.
 setv game "C2toDS_Hatchery_OpenedForFirstTime" 0
 
 
@@ -82,6 +95,9 @@ new: comp 1 29 50200 "moe_C2toDS_Hatchery" 1 0 9000
 
 scrp 1 29 50200 10
 
+	lock
+	inst
+
 *attr from Quit dialog
 
 *Camera Shy + Floatable + Invisible
@@ -103,6 +119,14 @@ scrp 1 29 50200 10
 *AND for mouse up/unpress events (+16)
 	imsk 28
 
+*AND for raw key down events (+1)
+	imsk 29
+*todo: make use of this ^
+
+
+*todo: i hate this
+*need to tick once every other frame frame to keep track of the sex symbol anim frame!
+	tick 2
 
 *part 1 - claw overlay
 	pat: dull 1 "moe_C2toDS_Hatchery" 1 0 0 51
@@ -119,9 +143,9 @@ scrp 1 29 50200 10
 	pat: dull 3 "moe_C2toDS_Hatchery" 0 0 0 52
 
 
-*set C2 framerate
+*set C2 framerate (not needed because we're manually animating it in the tick event)
 	part 3
-	frat 2
+*	frat 2
 
 *the 4 sexes:
 *4 NONE (used whenever an egg isnt selected, its a blank image)
@@ -133,6 +157,9 @@ scrp 1 29 50200 10
 	base 4
 	pose 0
 
+
+*animate forever
+*	anim [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 255]
 
 
 *part 4 - X button
@@ -178,7 +205,6 @@ scrp 1 29 50200 10
 *call the script to load any existing eggs
 	call 1001 0 0
 
-
 endm
 
 
@@ -203,7 +229,6 @@ scrp 1 29 50200 75
 
 	subv va50 va60
 	subv va51 va61
-
 
 
 
@@ -354,11 +379,19 @@ scrp 1 29 50200 75
 
 	next
 
+
+
+
+
+
 *va20 starts at 0. if it's still 0 by the end of this next loop, hide the sex marker
 	setv va20 0
 
+
 *loop through all egg data objects AGAIN, this time to see if any are highlighted and work out which highlighted egg has the highest plane
 	enum 1 29 50201
+
+
 
 *ov13 marks that the mouse is over this egg.
 		doif ov13 = 1
@@ -436,26 +469,76 @@ scrp 1 29 50200 75
 
 		inst
 
-*make sure it's invisible before doing anything
-		doif base = 4
 
 *		1 - female
-			doif va14 = 1
-				base 21
+		doif va14 = 1
+			base 21
+*			anim []
 *		2 - male
-			elif va14 = 2
-				base 37
+		elif va14 = 2
+			base 37
+
 *		0 (and anything else) - random
-			else
-				base 5
-				anim []
-			endi
-
-			pat: move 3 va10 va11
-*		pose 0
-			anim [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 255]
-
+		else
+			base 5
+*			anim []
 		endi
+
+*set pose appropriate to new base
+*		anim []
+
+		pat: move 3 va10 va11
+
+*		pose 0
+*			anim [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 255]
+
+*		doif pose < 15
+*			setv va75 pose
+*			addv va75 1
+*			pose va75
+*		else
+*			setv va75 0
+*			pose 0
+*		endi
+
+	endi
+
+endm
+
+
+
+*hatchery timer script, used to keep track of the frame number of the spinning sex symbol
+*todo: is this really the best option :|
+scrp 1 29 50200 9
+
+	inst
+
+	doif ov50 < 15
+		addv ov50 1
+	else
+		setv ov50 0
+	endi
+
+*set the part to the appropriate pose, unless it's base 4 (hidden, no sex symbol)
+	part 3
+
+	setv va13 base
+
+*	targ norn
+*	sezz vtos va13
+*	targ ownr
+
+	part 3
+
+	doif base > 4
+
+*todo: why ov50. move it to a nicer number.
+		pose ov50
+
+	else
+
+		base 4
+		pose 0
 
 	endi
 
@@ -482,6 +565,17 @@ scrp 1 29 50200 1000
 
 	inst
 
+*kill all existing eggs here to prevent conflicts
+*todo: so probably remove the code elsewhere that kills all existing eggs
+	enum 1 29 50201
+		kill targ
+	next
+
+
+
+
+
+
 ***************************
 *      EGG VARIABLES      *
 ***************************
@@ -499,6 +593,7 @@ scrp 1 29 50200 1000
 * OV11 - egg part number  * (on hatchery comp object)
 *ov12 - how long until we reset the timer?
 *ov13 - is this the highlighted egg?
+*ov99 - filename associated with this egg (only used during egg loading loop)
 ***************************
 
 
@@ -514,10 +609,90 @@ scrp 1 29 50200 1000
 *refill the hatchery if we ran out of eggs
 *	doif totl 1 29 50201 = 0
 
+
+
+
+
+
+
+
+
+
+
+	file glob 1 "*.c2egg"
+
+*loop iteration counter
+	setv va00 0
+
+*check how many "*.c2egg" were found
+
+*this line should work, but it doesn't read the entire line.
+*setv va50 inni
+
+*so we just read the whole line and convert that to a number instead.
+	setv va50 stoi innl
+
+*make an egg data holder object, use it to temporarily house an array.
+*(we immediately destroy the object at the end of this script)
+	new: simp 1 29 50201 "blnk" 1 0 0
+
+*remember the object for later, we need to switch between new eggs and this object a few times.
+	seta va99 targ
+
+	reps va50
+
+		sets va01 innl
+
+*get length of globbed file string...	
+		setv va02 strl va01
+
+*globbed files start with ".", so we remove 11 (number of characters forward we are looking from va02 (number of characters to read in total))
+*this stops it reading past the end of the string and causing an error.
+		subv va02 11
+*+1 because we need to read from AFTER that character.
+		addv va02 1
+
+*and then just return the last bit of the name such as "C2toDS_ChiChiNorn.c2egg"
+		sets va01 subs va01 11 va02
+
+*make an egg data holder object to act as a temporary member of an array.
+*new: simp 1 29 50201 "blnk" 1 0 0
+*this array contains the name string of every ".c2egg" file that needs to be loaded.
+*sets ov99 va01
+
+* first time round this sets "0" to va01
+*second time round this sets "1" to va01
+*etc
+		sets name va00 va01
+
+*+1 iteration count
+		addv va00 1
+
+	repe
+
+
+
+
+
+
 *set loop iteration to 0
 	setv va90 0
 
-	reps 6
+
+
+
+
+*and now run it backwards 
+	reps va00
+
+*target the object containing the array of egg filenames to load.
+		targ va99
+
+* first time this loop runs, check the variable with the name "0"
+*second time this loop runs, check the variable with the name "1"
+*etc
+		file iope 1 name va90
+
 
 *	file iope 1 "C2toDS_ChiChiNorn.c2egg"
 
@@ -532,19 +707,22 @@ scrp 1 29 50200 1000
 *	endi
 
 
-		doif va90 = 0
-			file iope 1 "C2toDS_HebeNorn_F.c2egg"
-		elif va90 = 1
-			file iope 1 "C2toDS_HebeNorn_M.c2egg"
-		elif va90 = 2
-			file iope 1 "C2toDS_EmeraldNorn_F.c2egg"
-		elif va90 = 3
-			file iope 1 "C2toDS_EmeraldNorn_M.c2egg"
-		elif va90 = 4
-			file iope 1 "C2toDS_PixieNorn_F.c2egg"
-		elif va90 = 5
-			file iope 1 "C2toDS_PixieNorn_M.c2egg"
-		endi
+*		doif va90 = 0
+*			file iope 1 "./C2toDS/Eggs/C2toDS_HebeNorn_F.c2egg"
+*		elif va90 = 1
+*			file iope 1 "./C2toDS/Eggs/C2toDS_HebeNorn_M.c2egg"
+*		elif va90 = 2
+*			file iope 1 "./C2toDS/Eggs/C2toDS_EmeraldNorn_F.c2egg"
+*		elif va90 = 3
+*			file iope 1 "./C2toDS/Eggs/C2toDS_EmeraldNorn_M.c2egg"
+*		elif va90 = 4
+*			file iope 1 "./C2toDS/Eggs/C2toDS_PixieNorn_F.c2egg"
+*		elif va90 = 5
+*			file iope 1 "./C2toDS/Eggs/C2toDS_PixieNorn_M.c2egg"
+*		endi
+
+
+*		file iope 1 "./Journal/C2toDS_EmeraldNorn_F.c2egg"
 
 *	file iope 1 "C2toDS_EmeraldNorn_M.c2egg"
 
@@ -567,10 +745,11 @@ scrp 1 29 50200 1000
 
 *TEMPORARY RANDOMIZE X AND Y
 
-*	setv ov01 rand 0 138
-*	setv ov02 rand 0 50
-*	sets ov01 vtos ov01
-*	sets ov02 vtos ov02
+*todo: disable this ofc
+		setv ov01 rand 0 138
+		setv ov02 rand 0 50
+		sets ov01 vtos ov01
+		sets ov02 vtos ov02
 
 
 		sets va35 "gallery:"
@@ -624,6 +803,10 @@ scrp 1 29 50200 1000
 		addv va90 1
 
 	repe
+
+*now that you've made a new: simp egg data holder from every file in the array object,
+*we can safely kill it before the hatchery tries to read it as a real egg.
+	kill va99
 
 *	endi
 
@@ -1224,6 +1407,44 @@ scrp 1 29 50200 77
 	endi
 
 endm
+
+
+
+
+
+*raw key down script
+
+scrp 1 29 50200 73
+
+	lock
+
+	targ norn
+	sezz vtos _p1_
+	targ ownr
+
+*if left mouse button is unpressed
+	doif _p1_ = 1
+
+		inst
+
+*		attr 0
+		setv va00 posl
+		setv va01 post
+
+*		attr 304
+
+*convert to screen space coords by subtracting window left and top from object left and top.
+		subv va00 wndl
+		subv va01 wndt
+
+		frel null
+
+		flto va00 va01
+
+	endi
+
+endm
+
 
 
 
