@@ -80,9 +80,9 @@ loop
 untl grap va02 va04 ne -1 and grap va02 va04 ne grap 4353 48975
 
 setv va21 grap va02 va04
-dmap 1
-dbg: outs "va21"
-dbg: outv va21
+*dmap 1
+*dbg: outs "va21"
+*dbg: outv va21
 
 addv va03 1
 * I don't know why this breaks it but it does
