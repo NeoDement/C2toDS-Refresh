@@ -1,0 +1,161 @@
+*NOTE: THIS FILE ONLY RUNS ONCE, WHEN CREATING THE WORLD! of course!!
+
+
+inst
+
+new: simp 3 14 50203 "blnk" 1 0 0
+
+file iope 0 "addons"
+
+setv name "install_c2tods?" 0
+sets name "first_addon" ""
+
+doif inok = 1
+
+	loop
+
+		sets va99 innl
+
+*hardcoded fix for C2toDS progress bar. always inject last.
+
+*todo: something more flexible?
+		doif va99 = "C2 to DS Refresh"
+			setv name "install_c2tods?" 1
+		else
+			sets name "first_addon" va99
+		endi
+
+	untl inok = 0
+
+endi
+
+file iclo
+
+
+*install the first addon DURING the loading bar
+doif name "first_addon" <> ""
+	sets va99 name "first_addon"
+	gsub inject_it
+endi
+
+
+*now install the rest of the addons AFTER the loading bar
+mesg writ targ 1000
+
+
+
+
+*todo: TEST THIS. maybe also make the code less crap
+
+
+
+
+
+
+
+*todo: should we be rewriting this to actually report errors to the user??
+
+subr inject_it
+
+*test the chunk exists first
+	setv va00 pray test va99
+
+*	Inject the chunk
+	doif va00 <> 0
+		setv va00 pray injt va99 1 va01
+		doif va00 <> 0
+			outs "There was an error injecting '"
+			outs va99
+			outs "'.\n"
+			outs "Error: "
+			outv va00
+			outs "\n"
+		else
+			outs "Agent '"
+			outs va99
+			outs "' injected successfully."
+		endi
+	endi
+retn
+
+
+
+
+endm
+
+
+
+
+
+
+
+
+
+
+scrp 3 14 50203 1000
+
+	inst
+
+	file iope 0 "addons"
+
+	doif inok = 1
+
+		loop
+
+			wait 1
+			inst
+
+			sets va99 innl
+
+*don't inject C2toDS or the addon you already injected.
+			doif va99 <> "C2 to DS Refresh" and va99 <> name "first_addon"
+				gsub inject_it
+			endi
+
+		untl inok = 0
+
+	endi
+
+	file iclo
+
+
+*finally, install c2tods itself
+	doif name "install_c2tods?" = 1
+
+		sets va99 "C2 to DS Refresh"
+		gsub inject_it
+
+	endi
+
+	kill ownr
+
+
+
+*todo: should we be rewriting this to actually report errors to the user??
+
+	subr inject_it
+
+*test the chunk exists first
+		setv va00 pray test va99
+
+*	Inject the chunk
+		doif va00 <> 0
+			setv va00 pray injt va99 1 va01
+			doif va00 <> 0
+				outs "There was an error injecting '"
+				outs va99
+				outs "'.\n"
+				outs "Error: "
+				outv va00
+				outs "\n"
+			else
+				outs "Agent '"
+				outs va99
+				outs "' injected successfully."
+			endi
+		endi
+	retn
+
+
+
+endm
