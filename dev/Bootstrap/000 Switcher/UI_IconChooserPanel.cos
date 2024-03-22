@@ -90,9 +90,9 @@ scrp 1 1 34543 10
 
 
 * left button
-	pat: butt 1 "worldswitcher_IconPanel" 3 2 15 167 1 [] 1000 0
+	pat: butt 1 "worldswitcher_IconPanel" 4 2 15 167 1 [] 1000 0
 * right button
-	pat: butt 2 "worldswitcher_IconPanel" 5 2 263 167 2 [] 1000 0
+	pat: butt 2 "worldswitcher_IconPanel" 6 2 263 167 2 [] 1000 0
 
 
 *	part 1
@@ -103,10 +103,10 @@ scrp 1 1 34543 10
 
 
 * + button (OPEN ICON EDITOR)
-	pat: butt 3 "worldswitcher_IconPanel" 2 1 91 167 3 [] 2000 0
+	pat: butt 3 "worldswitcher_IconPanel" 2 2 91 167 3 [] 2000 0
 
 * Icon Set:
-	pat: fixd 4 "worldswitcher_IconPanel" 9 12 12 4 "whiteontransparentchars"
+	pat: fixd 4 "worldswitcher_IconPanel" 8 12 12 4 "whiteontransparentchars"
 	part 4
 *ptxt "Icon Set:"
 	ptxt game "UI_ICONSET"
@@ -116,7 +116,7 @@ scrp 1 1 34543 10
 
 
 * Open Icon Editor text
-	pat: fixd 5 "worldswitcher_IconPanel" 9 123 168 5 "whiteontransparentchars"
+	pat: fixd 5 "worldswitcher_IconPanel" 8 123 168 5 "whiteontransparentchars"
 	part 5
 *ptxt "Open icon editor"
 	ptxt game "UI_CUSTOM"
@@ -305,17 +305,30 @@ endm
 
 scrp 1 1 34543 2000
 
+	lock
+	part _p1_
+	pose 1
+
 	inst
 
-*	lock
-*
-**save our icon from the buffer into our local (Startup) journal folder as "tempicon".
-*	mesg wrt+ game "IconEditor_Main" 5001 "tempicon" 0 0
-*
-*	wait 1
+
+	wait 3
+	lock
+
+	pose 0
+
+*check if mouse cursor object exists (indicates Icon Editor is loaded)
+
+*slightly different wait time after it's loaded makes it feel pretty consistent
+	doif type game "IconEditor_Cursor" = 3
+		wait 3
+	else
+		wait 1
+	endi
 
 *position and activate the Icon Editor!
 	mesg writ game "IconEditor_Main" 7500
+
 
 
 *pause our icon chooser panel until the icon editor unpauses it.
@@ -736,13 +749,10 @@ endm
 scrp 1 1 34543 75
 
 
+*	todo: highliht icon instead of moving glow
+
+
 	inst
-
-*todo: idk why i'm doing it this way.
-	doif part 9 = 0
-		pat: dull 9 "worldswitcher_IconPanel" 8 -1000 -1000 9
-	endi
-
 
 *initial icon X/Y positions
 	setv va11 13
@@ -787,10 +797,6 @@ scrp 1 1 34543 75
 
 
 
-*if ANY icons were highlighted this loop, don't delete the highlight part.
-	setv va80 0
-
-
 	reps game "WorldSwitcher_IconChooser_IconsPerPage"
 
 
@@ -817,12 +823,16 @@ scrp 1 1 34543 75
 		addv va34 29
 		addv va34 post
 
+*target current part and set it to highlight mode
+		setv va91 va90
+		addv va91 10
+		part va91
 
 		doif mopx > va31 and mopx < va33 and mopy > va32 and mopy < va34
-			pat: move 9 va21 va22
 
-*if ANY icons were highlighted this loop, don't delete the highlight part.
-			addv va80 1
+
+			pose 1
+
 
 
 *if _p2_ is 1, that means we were called by the mouseclick event and should fire the appropriate icon back to the main form
@@ -870,6 +880,7 @@ scrp 1 1 34543 75
 				subv va24 1
 
 
+
 *set gall and pose
 				targ game "WorldSwitcher_Main"
 				part game "WorldSwitcher_WorldCreation_IconPreviewPart"
@@ -879,6 +890,8 @@ scrp 1 1 34543 75
 *				dbg: outv va24
 
 				gall va23 va24
+
+
 
 
 *create a button to reset the icon. script 4000 in "DS world switcherC2.cos"
@@ -907,10 +920,7 @@ scrp 1 1 34543 75
 
 *show preview icon.
 
-*show doesn't work on a per-part basis so we're just gonna move the part back in bounds.
-*	part game "WorldSwitcher_WorldCreation_IconPreviewPart"
-*	show 1
-
+*move the part back in bounds.
 					pat: move game "WorldSwitcher_WorldCreation_IconPreviewPart" game "WorldSwitcher_WorldCreation_IconPreviewPart_X" game "WorldSwitcher_WorldCreation_IconPreviewPart_Y"
 
 *position buffer offscreen.
@@ -938,7 +948,8 @@ scrp 1 1 34543 75
 
 			endi
 
-
+		else
+			pose 0
 		endi
 
 
@@ -962,11 +973,6 @@ scrp 1 1 34543 75
 		addv va90 1
 
 	repe
-
-*if ANY icons were highlighted this loop, don't delete the highlight part.
-	doif va80 = 0
-		pat: kill 9
-	endi
 
 endm
 
@@ -1107,7 +1113,7 @@ scrp 1 1 34543 6002
 
 
 *icon numbers start at 1, the 0 frames are the dim versions
-	addv va24 1
+*	addv va24 1
 
 
 	setv game "WorldSwitcher_IconChooser_IconsPerPage" va88
@@ -1156,9 +1162,6 @@ scrp 1 1 34543 6002
 	repe
 
 
-	doif part 9 = 1
-		pat: kill 9
-	endi
 
 *fake mouse move redraw our selection highlight
 	call 75 mopx mopy
@@ -1169,9 +1172,6 @@ scrp 1 1 34543 6002
 
 
 *LEFT
-*		doif _p1_ = 1
-*			subv game "WorldSwitcher_IconChooser_CurrentPage" 1
-
 	part 1
 
 	doif game "WorldSwitcher_IconChooser_CurrentPage" <= 1
@@ -1181,9 +1181,6 @@ scrp 1 1 34543 6002
 	endi
 
 *RIGHT
-*	else
-*			addv game "WorldSwitcher_IconChooser_CurrentPage" 1
-
 	part 2
 
 	doif game "WorldSwitcher_IconChooser_CurrentPage" >= game "WorldSwitcher_IconChooser_MaxPage"
@@ -1191,7 +1188,6 @@ scrp 1 1 34543 6002
 	else
 		pose 1
 	endi
-*	endi
 
 
 
