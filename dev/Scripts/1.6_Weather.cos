@@ -20,8 +20,8 @@
 *Toolbar can now be clicked and dragged to move it and supports docking to the bottom and right sides of the screen.
 
 *TODO: RUN A WORLD FOR A LONG TIME AND SEE IF CLOUD PLANE IS EVER NOT 8002!!!
-*plane is 2 below Wolfling Control so we don't draw anything on top of it
-new: comp 1 9 50200 "moe_C2toDS_Weather" 1 32 8998
+*plane is 10 above DS UI so it draws above all the default parts.
+new: comp 1 9 50200 "moe_C2toDS_Weather" 1 32 8910
 
 *attr 34
 
@@ -227,8 +227,6 @@ scrp 1 9 50200 5
 
 		setv va02 wndr
 		subv va02 wdth
-*fix because sprite width is a bit wider than it visually seems
-		addv va02 22
 
 		mvto va02 post
 
@@ -281,8 +279,6 @@ scrp 1 9 50200 123
 
 		setv va02 wndr
 		subv va02 wdth
-*fix because sprite width is a bit wider than it visually seems
-		addv va02 22
 
 		mvto va02 post
 
