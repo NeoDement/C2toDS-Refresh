@@ -1,0 +1,14 @@
+move over all the .cos files from 'C2toDS-Refresh/compile_temp/dev/scripts' into 'compile_temp'.
+
+edit 'compile_c2tods_temp.bat' to point to the correct paths on your machine. 'C2toDS_Refresh_Part1.txt' and 'C2toDS_Refresh_Part2.txt' should be in 'C2toDS-Refresh/compile_temp/'.
+
+run 'compile_c2tods_temp.bat'.
+
+take the 'C2toDS_Refresh_Part1.agents' and the 'C2toDS_Refresh_Part2.agents' from 'C2toDS-Refresh/compile_temp' and put them in 'C2toDS-Refresh/COMPILED_temp/My Agents".
+
+take all the files in 'C2toDS-Refresh/dev/' EXCEPT for '/Scripts/' and put them in 'C2toDS-Refresh/COMPILED_temp/'.
+
+slap a readme in the root of 'C2toDS-Refresh/COMPILED_temp/' and the zip the whole thing up. it's releasable!
+
+
+TODO: automate this whole process! ideally 'compiler.py' and 'COMPILE.bat' could exist, and work to do all these manual steps in one click.
